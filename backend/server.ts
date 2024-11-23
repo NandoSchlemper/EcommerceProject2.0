@@ -1,12 +1,18 @@
 import Fastify from 'fastify';
 import cors from '@fastify/cors';
+import cookie from '@fastify/cookie';
 import { fastifyTRPCPlugin } from '@trpc/server/adapters/fastify';
 import { createContext } from './tprc/context';
 import { AppRouter } from './api';
+import { env } from './utils/env';
 
 const server = Fastify();
 
 server.register(cors);
+
+server.register(cookie, {
+  secret: env.JWT_SECRET
+})
 
 server.register(fastifyTRPCPlugin, {
   prefix: '/trpc',
