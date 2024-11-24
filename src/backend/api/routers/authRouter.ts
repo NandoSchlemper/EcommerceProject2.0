@@ -14,7 +14,7 @@ const transporter = nodemailer.createTransport({
         pass: env.PASSWORD
     }
 })
-
+ 
 export const authRouter = router({
     register: procedure.input(
         z.object({
@@ -59,9 +59,13 @@ export const authRouter = router({
 
         console.log(magicLink)
 
-        ctx.reply?.setCookie('token', token)
+        ctx.reply?.setCookie('token', token, {
+            httpOnly: true,
+            path: '/'
+        })
         return {message: 'cookie enviado'}
     }),
+
 
     verify: procedure.input(
         z.object({
