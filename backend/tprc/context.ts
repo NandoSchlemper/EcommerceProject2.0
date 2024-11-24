@@ -10,7 +10,7 @@ export async function createContext({ req, res }: CreateFastifyContextOptions) {
   if (!token) {
     console.log("Token não fornecido via cookie...");
     return { user: null }; 
-  } 
+  }
 
   const decodedToken = validateToken(token);
 
