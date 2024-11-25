@@ -1,7 +1,6 @@
 import {integer, pgTable, text, uuid} from 'drizzle-orm/pg-core'
 import { relations } from 'drizzle-orm'
 import { users } from './userSchema'
-import { orderItems } from './orderSchema';
 
 export const products = pgTable('products', {
     id: uuid('id').defaultRandom(),
@@ -12,11 +11,10 @@ export const products = pgTable('products', {
     stock: integer('stock').notNull()
 })
 
-export const productsRelations = relations(products, ({ one, many }) => ({
+export const productsRelations = relations(products, ({ one }) => ({
     users: one(users, {
         fields: [products.user_id],
         references: [users.id]
     }),
 
-    orderItems: many(orderItems)
 }));

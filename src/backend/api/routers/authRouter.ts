@@ -44,7 +44,7 @@ export const authRouter = router({
 
         const token = generateToken(user)
 
-        const magicLink = `http://localhost:4000/auth?token=${token}`
+        const magicLink = `http://localhost:5173/magic-link?token=${token}`
 
         try {
             await transporter.sendMail({
@@ -69,16 +69,20 @@ export const authRouter = router({
 
     verify: procedure.input(
         z.object({
-            token: z.string()
+            token: z.string().nullable()
         })
     ).query(({input, ctx}) => {
         const {token} = input
+        if (!token) {
+            console.error("token não fornecido")
+            throw new Error('Token não fornecido')
+        }
 
         try {
             const decoded = validateToken(token)
-
+            
             ctx.reply?.setCookie('token', token, {httpOnly: true})
-            return {message: 'Token valido', email: decoded}
+            return {email: decoded}
         } catch (err) {
             console.error("Deu merda na validacao do token...", err)
             throw new Error('Token invalido ou expirado')
