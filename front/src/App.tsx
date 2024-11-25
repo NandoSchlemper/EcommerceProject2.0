@@ -7,7 +7,7 @@ import Cart from './routes/cart';
 import Success from './routes/sucess';
 
 
-function App() {
+export default function App() {
   return (
     <Router>
       <Routes>
@@ -22,4 +22,3 @@ function App() {
   );
 }
 
-export default App;

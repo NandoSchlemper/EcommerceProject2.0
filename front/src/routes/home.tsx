@@ -26,8 +26,8 @@ function Home() {
                 <TableCell>{produto.nome}</TableCell>
                 <TableCell>{produto.preco}</TableCell>
                 <TableCell>
-                  <Button className="mr-2 bg-gold-500 text-black">Adicionar ao Carrinho</Button>
-                  <Button className="bg-black text-white">Criar Produto</Button>
+                  <Button className="bg-[#4ade80] text-black"> + </Button>
+                  <Button className="bg-[#f87171] text-black">Delete</Button>
                 </TableCell>
               </TableRow>
             ))}
