@@ -6,6 +6,7 @@ import nodemailer from 'nodemailer'
 import { db } from "../../db";
 import { users } from "../../db/schemas/userSchema";
 import { TRPCError } from "@trpc/server";
+import { eq } from "drizzle-orm";
 
 const transporter = nodemailer.createTransport({
     service: 'Gmail',
@@ -40,16 +41,16 @@ export const authRouter = router({
             email: z.string().email()
         })
     ).mutation(async ({input, ctx}) => {
-        const user = input
+        const user = await db.select({id: users.id, email: users.email}).from(users).where(eq(users.email, input.email))
 
-        const token = generateToken(user)
+        const token = generateToken({id: user[0].id, email: user[0].email})
 
         const magicLink = `http://localhost:5173/magic-link?token=${token}`
 
         try {
             await transporter.sendMail({
                 from: env.EMAIL,
-                to: user.email,
+                to: input.email,
                 subject: 'Magic Link para acesso',
                 text: 'Clique no link para acessar o login'
             })

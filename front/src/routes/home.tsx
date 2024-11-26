@@ -1,15 +1,17 @@
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Table, TableHeader, TableCell, TableRow } from "@/components/ui/table";
-import {useState} from 'react'
 import { ProductDialog } from "@/components/productDialog";
 import { CartDialog } from "@/components/cardDialog";
-// name: string; price: number; description: string; stock: number
+import { client } from "@/api";
 
+// Definição da interface do produto para a aplicação
 interface Product {
-  name: string,
-  price: number,
-  description: string,
-  stock: number
+  id: string;
+  name: string;
+  price: number;
+  description: string;
+  stock: number;
 }
 
 export default function Home() {
@@ -18,8 +20,30 @@ export default function Home() {
   const [showAddProduct, setShowAddProduct] = useState(false);
   const [showCart, setShowCart] = useState(false);
 
+  // Buscar produtos do backend na montagem do componente
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await client.product.getAllProducts.query(); // Substitua pela URL correta
+        if (response) {
+          const formattedProducts = response.map((item) => ({
+            id: item.id || crypto.randomUUID(), // Gera um UUID se o id for nulo
+            name: item.name,
+            description: item.description || "Sem descrição",
+            price: Number.parseFloat(item.price), // Converte preço para número
+            stock: item.stock || 0,
+          }));
+          setProducts(formattedProducts);
+        }
+      } catch (err) {
+        console.error("Erro ao buscar produtos:", err);
+      }
+    };
+    fetchProducts();
+  }, []);
+
   const addToCart = (product: Product) => {
-    setCart([...cart, product]);
+    setCart((prevCart) => [...prevCart, product]);
   };
 
   return (
@@ -29,8 +53,7 @@ export default function Home() {
         <Button onClick={() => setShowCart(true)}>Carrinho ({cart.length})</Button>
       </div>
 
-      {/* Dialogs */}
-      {showAddProduct && <ProductDialog onClose={() => setShowAddProduct(false)} onAdd={setProducts} />}
+      {showAddProduct && <ProductDialog onClose={() => setShowAddProduct(false)} />}
       {showCart && <CartDialog onClose={() => setShowCart(false)} cart={cart} />}
 
       {/* Tabela de Produtos */}
@@ -38,19 +61,24 @@ export default function Home() {
         <TableHeader>
           <TableRow>
             <TableCell>Nome</TableCell>
+            <TableCell>Descrição</TableCell>
             <TableCell>Preço</TableCell>
+            <TableCell>Estoque</TableCell>
             <TableCell>Ações</TableCell>
           </TableRow>
         </TableHeader>
         <tbody>
-          {products.map((product, index) => (
-            // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
-            <TableRow key={index}>
+          {products.map((product) => (
+            <TableRow key={product.id}>
               <TableCell>{product.name}</TableCell>
-              <TableCell>R$ {product.price}</TableCell>
-              <TableCell>
+              <TableCell>{product.description}</TableCell>
+              <TableCell>R$ {product.price.toFixed(2)}</TableCell>
+              <TableCell>{product.stock}</TableCell>
+              <TableCell className="flex gap-2">
                 <Button onClick={() => addToCart(product)}>Adicionar ao Carrinho</Button>
-                <Button variant="destructive" onClick={() => {/* Lógica de exclusão */}}>Excluir</Button>
+                <Button variant="destructive" onClick={() => {/* Lógica de exclusão futura */}}>
+                  Excluir
+                </Button>
               </TableCell>
             </TableRow>
           ))}
@@ -59,4 +87,3 @@ export default function Home() {
     </div>
   );
 }
-

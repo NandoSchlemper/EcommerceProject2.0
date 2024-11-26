@@ -25,14 +25,12 @@ function Login() {
     setSuccess(null);
 
     try {
-      // Fazendo a requisição para o servidor com o email do usuário
       const response = await client.auth.login.mutate({email: email});
 
       if (!response) {
+        console.log(response)
         throw new Error("Erro ao enviar o magic link.");
       }
-
-      // Se a requisição for bem-sucedida, mostrar a mensagem de sucesso
       setSuccess("Link enviado com sucesso. Verifique seu email.");
     } catch (err) {
       console.error("Erro ao enviar magic link", err);

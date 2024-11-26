@@ -24,7 +24,14 @@ export const productRouter = router({
         }
     )).mutation(async ({input}) => {
         try {
-            const response = await db.insert(products).values(input)
+            const response = await db.insert(products).values({
+                user_id: input.user_id,
+                name: input.name,
+                description: input.description,
+                price: input.price,
+                stock: input.stock
+            })
+
             return response
         } catch (err) {
             console.error("Erro ao inserir produto", err)
